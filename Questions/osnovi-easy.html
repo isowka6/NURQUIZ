@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Основы — Легко</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      padding: 40px;
+      background: linear-gradient(to bottom right, #e6f4ea, #ccebd6);
+      font-family: 'Segoe UI', sans-serif;
+      color: #1e3a1e;
+      position: relative;
+    }
+
+    /* Орнамент */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 120px;
+      height: 120px;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Islamic_star.svg/1024px-Islamic_star.svg.png') no-repeat center;
+      background-size: contain;
+      opacity: 0.1;
+      z-index: 0;
+    }
+
+    .question-box {
+      background: #ffffff;
+      padding: 60px 40px;
+      border-radius: 16px;
+      max-width: 700px;
+      margin: 0 auto;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+      border: 2px solid #a7f3d0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .main {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .main a {
+      text-decoration: none;
+      font-weight: bold;
+      padding: 10px 16px;
+      background: #10b981;
+      color: white;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: background 0.3s ease;
+    }
+
+    .main a:hover {
+      background: #059669;
+    }
+
+    #progress {
+      font-size: 22px;
+      margin-bottom: 20px;
+      text-align: right;
+      color: #065f46;
+    }
+
+    #question {
+      font-size: 24px;
+      margin-bottom: 30px;
+      color: #064e3b;
+    }
+
+    .answers a {
+      display: block;
+      margin: 12px 0;
+      padding: 18px;
+      background: #34d399;
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 18px;
+      transition: background 0.3s ease;
+    }
+
+    .answers a:hover {
+      background: #2dd4bf;
+    }
+
+    .answers a.correct {
+      background: #22c55e !important;
+    }
+
+    .answers a.wrong {
+      background: #ef4444 !important;
+    }
+
+    .answers a.disabled {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    .feedback {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #1c4532;
+    }
+
+    .result {
+      text-align: center;
+      font-size: 26px;
+      margin-top: 40px;
+      color: #065f46;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 20px;
+      }
+
+      .question-box {
+        padding: 40px 20px;
+      }
+
+      #question {
+        font-size: 20px;
+      }
+
+      .answers a {
+        font-size: 16px;
+        padding: 14px;
+      }
+
+      .main a {
+        font-size: 14px;
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="question-box">
+    <div class="main">
+      <a href="../index.html">🏠 Главная</a>
+      <a href="../Quiz/quiz.html">🔙 Назад</a>
+    </div>
+    <div id="progress">0 / 0</div>
+    <h2 id="question">Загрузка вопроса...</h2>
+    <div class="answers" id="answers"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <div class="result" id="result" style="display: none;"></div>
+</body>
+
+</html>
+
+<script>
+  const questions = [
+    {
+      text: "Сколько столпов ислама?",
+      options: ["6", "4", "5", "3"],
+      correct: 2
+    },
+    {
+      text: "Как называется первый столп ислама?",
+      options: ["Хадж", "Шахада", "Закят", "Намаз"],
+      correct: 1
+    },
+    {
+      text: "Сколько раз в день мусульманин должен совершать намаз?",
+      options: ["7", "3", "10", "5"],
+      correct: 3
+    },
+    {
+      text: "Как называется священная книга мусульман?",
+      options: ["Забур", "Коран", "Тора", "Библия"],
+      correct: 1
+    },
+    {
+      text: "Кто является последним пророком в исламе?",
+      options: ["Мухаммад (мир ему и благословение Аллаха)", "Иса (мир ему)", "Муса (мир ему)", "Ибрагим (мир ему)"],
+      correct: 0
+    },
+    {
+      text: "Как называется пост в месяц Рамадан?",
+      options: ["Саум", "Хадж", "Сунна", "Закят"],
+      correct: 0
+    },
+    {
+      text: "Как называется паломничество в Мекку?",
+      options: ["Намаз", "Хадж", "Саум", "Шахада"],
+      correct: 1
+    },
+    {
+      text: "Кому мусульманин выплачивает закят?",
+      options: ["Имаму", "Государству", "Бедным и нуждающимся", "Родителям"],
+      correct: 2
+    },
+    {
+      text: "Сколько основных принципов веры (иман) в исламе?",
+      options: ["6", "5", "3", "7"],
+      correct: 0
+    },
+    {
+      text: "Во что мусульманин должен верить?",
+      options: ["Только в Аллаха", "В природу", "Только в Коран", "В ангелов, книги, пророков, Судный день, предопределение"],
+      correct: 3
+    },
+    {
+      text: "Как называется место поклонения мусульман?",
+      options: ["Мечеть", "Храм", "Синагога", "Церковь"],
+      correct: 0
+    },
+    {
+      text: "Как называется направление, в котором мусульмане совершают намаз?",
+      options: ["Кааба", "Медина", "Мина", "Иерусалим"],
+      correct: 0
+    },
+    {
+      text: "Как называется пятничная молитва?",
+      options: ["Фаджр", "Иша", "Джума", "Зухр"],
+      correct: 2
+    },
+    {
+      text: "Что означает слово 'ислам'?",
+      options: ["Сила и власть", "Путь и истина", "Мир и покорность", "Свет и знание"],
+      correct: 2
+    },
+    {
+      text: "Кто такие сахабы?",
+      options: ["Ангелы", "Имамы", "Сподвижники пророка", "Учёные"],
+      correct: 2
+    },
+    {
+      text: "Как называется ангел, приносящий откровения пророкам?",
+      options: ["Азраиль", "Микаиль", "Исрафиль", "Джабраиль"],
+      correct: 3
+    },
+    {
+      text: "Какой месяц считается самым благословенным в исламе?",
+      options: ["Мухаррам", "Шаабан", "Рамадан", "Зуль-Хиджа"],
+      correct: 2
+    },
+    {
+      text: "Сколько раз мусульманин должен совершать омовение перед намазом?",
+      options: ["Раз в месяц", "Раз в неделю", "Каждый день", "Перед каждым намазом"],
+      correct: 3
+    },
+    {
+      text: "Как называется ночная молитва?",
+      options: ["Фаджр", "Тахаджуд", "Зухр", "Иша"],
+      correct: 1
+    },
+    {
+      text: "Как называется короткая сура, которую читают в намазе?",
+      options: ["Аль-Бакара", "Аль-Фатиха", "Аль-Имран", "Аль-Нас"],
+      correct: 1
+    },
+    {
+      text: "Что означает слово 'умма'?",
+      options: ["Община", "Молитва", "Семья", "Паломничество"],
+      correct: 0
+    },
+    {
+      text: "Как называется день праздника после Рамадана?",
+      options: ["Мавлид", "Ид аль-Адха", "Ид аль-Фитр", "Джума",],
+      correct: 2
+    },
+    {
+      text: "Как называется праздник жертвоприношения?",
+      options: ["Мавлид", "Ид аль-Фитр", "Джума", "Ид аль-Адха"],
+      correct: 3
+    },
+    {
+      text: "Как называется обязательный налог в исламе?",
+      options: ["Фитра", "Хадж", "Садака", "Закят"],
+      correct: 3
+    },
+    {
+      text: "Как называется добровольное пожертвование?",
+      options: ["Шахада", "Садака", "Хадж", "Закят"],
+      correct: 1
+    }
+  ];
+
+
+
+  let current = 0;
+  let score = 0;
+
+  const questionEl = document.getElementById("question");
+  const answersEl = document.getElementById("answers");
+  const feedbackEl = document.getElementById("feedback");
+  const resultEl = document.getElementById("result");
+  const progressEl = document.getElementById("progress");
+
+  function loadQuestion() {
+    const q = questions[current];
+    progressEl.textContent = `${current + 1}/${questions.length}`;
+    questionEl.textContent = q.text;
+    answersEl.innerHTML = "";
+    feedbackEl.textContent = "";
+
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement("a");
+      btn.href = "#";
+      btn.className = "btn";
+      btn.textContent = opt;
+      btn.dataset.index = i;
+      btn.addEventListener("click", handleAnswer);
+      answersEl.appendChild(btn);
+    });
+  }
+
+  function handleAnswer(e) {
+    e.preventDefault();
+    const selected = parseInt(e.target.dataset.index);
+    const correct = questions[current].correct;
+    const buttons = document.querySelectorAll(".answers .btn");
+
+    buttons.forEach((btn, i) => {
+      btn.classList.add("disabled");
+      if (i === correct) {
+        btn.classList.add("correct");
+      } else {
+        btn.classList.add("wrong");
+      }
+    });
+
+    if (selected === correct) {
+      feedbackEl.textContent = "Правильно!";
+      feedbackEl.style.color = "green";
+      score++;
+    } else {
+      feedbackEl.textContent = `Неправильно. Правильный ответ: ${questions[current].options[correct]}`;
+      feedbackEl.style.color = "red";
+    }
+
+    setTimeout(() => {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    }, 2000);
+  }
+
+  function showResult() {
+    document.querySelector(".question-box").style.display = "none";
+    resultEl.style.display = "block";
+    resultEl.innerHTML = `
+    🎉 Викторина завершена!<br>
+    Ваш результат: <strong>${score} из ${questions.length}</strong><br><br>
+    <a href="../Quiz/quiz.html" class="btn" style="
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #4CAF50;
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+    ">🔙 Вернуться в меню</a>
+  `;
+  }
+
+  loadQuestion();
+</script>
+</body>
+
+</html>
