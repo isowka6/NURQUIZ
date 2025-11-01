@@ -1,0 +1,88 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to bottom right, #e6f4ea, #ccebd6);
+  color: #1e3a1e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Контейнер */
+.container {
+  max-width: 600px;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  border: 2px solid #a7f3d0;
+}
+
+/* Заголовок */
+.header h1 {
+  font-size: 2.8rem;
+  margin-bottom: 0.2rem;
+  color: #065f46;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #2f855a;
+}
+
+/* Вступление */
+.intro p {
+  font-size: 1rem;
+  margin: 1.5rem 0;
+  line-height: 1.6;
+  color: #1c4532;
+}
+
+/* Кнопка */
+.start-btn {
+  display: inline-block;
+  padding: 0.8rem 1.5rem;
+  font-size: 1.1rem;
+  background-color: #10b981;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.start-btn:hover {
+  background-color: #059669;
+}
+
+/* Результат */
+.score {
+  margin-top: 2rem;
+  font-size: 1rem;
+  color: #065f46;
+}
+
+/* Footer */
+.footer {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #2f855a;
+}
+
+/* Адаптация */
+@media (max-width: 600px) {
+  .container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+
+  .header h1 {
+    font-size: 2.2rem;
+  }
+
+  .start-btn {
+    font-size: 1rem;
+    padding: 0.6rem 1.2rem;
+  }
+}
