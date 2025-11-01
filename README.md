@@ -1,2 +1,0 @@
-# NURQUIZ
-NURQUIZ
