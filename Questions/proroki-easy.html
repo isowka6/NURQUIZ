@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Основы — Легко</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      padding: 40px;
+      background: linear-gradient(to bottom right, #e6f4ea, #ccebd6);
+      font-family: 'Segoe UI', sans-serif;
+      color: #1e3a1e;
+      position: relative;
+    }
+
+    /* Орнамент */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 120px;
+      height: 120px;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Islamic_star.svg/1024px-Islamic_star.svg.png') no-repeat center;
+      background-size: contain;
+      opacity: 0.1;
+      z-index: 0;
+    }
+
+    .question-box {
+      background: #ffffff;
+      padding: 60px 40px;
+      border-radius: 16px;
+      max-width: 700px;
+      margin: 0 auto;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+      border: 2px solid #a7f3d0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .main {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .main a {
+      text-decoration: none;
+      font-weight: bold;
+      padding: 10px 16px;
+      background: #10b981;
+      color: white;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: background 0.3s ease;
+    }
+
+    .main a:hover {
+      background: #059669;
+    }
+
+    #progress {
+      font-size: 22px;
+      margin-bottom: 20px;
+      text-align: right;
+      color: #065f46;
+    }
+
+    #question {
+      font-size: 24px;
+      margin-bottom: 30px;
+      color: #064e3b;
+    }
+
+    .answers a {
+      display: block;
+      margin: 12px 0;
+      padding: 18px;
+      background: #34d399;
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 18px;
+      transition: background 0.3s ease;
+    }
+
+    .answers a:hover {
+      background: #2dd4bf;
+    }
+
+    .answers a.correct {
+      background: #22c55e !important;
+    }
+
+    .answers a.wrong {
+      background: #ef4444 !important;
+    }
+
+    .answers a.disabled {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    .feedback {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #1c4532;
+    }
+
+    .result {
+      text-align: center;
+      font-size: 26px;
+      margin-top: 40px;
+      color: #065f46;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 20px;
+      }
+
+      .question-box {
+        padding: 40px 20px;
+      }
+
+      #question {
+        font-size: 20px;
+      }
+
+      .answers a {
+        font-size: 16px;
+        padding: 14px;
+      }
+
+      .main a {
+        font-size: 14px;
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="question-box">
+    <div class="main">
+      <a href="../index.html">🏠 Главная</a>
+      <a href="../Quiz/quiz.html">🔙 Назад</a>
+    </div>
+    <div id="progress">0 / 0</div>
+    <h2 id="question">Загрузка вопроса...</h2>
+    <div class="answers" id="answers"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <div class="result" id="result" style="display: none;">
+
+    <script>
+      const questions = [
+        {
+          text: "Назови пророка, с которого началась история человечества.",
+          options: ["Нух (мир ему)", "Ибрагим (мир ему)", "Муса (мир ему)", "Адам (мир ему)"],
+          correct: 3
+        },
+        {
+          text: "Кто оказался внутри огромного морского существа, но был спасён по милости Аллаха?",
+          options: ["Иса (мир ему)", "Юсуф (мир ему)", "Юнус (мир ему)", "Айюб (мир ему)"],
+          correct: 2
+        },
+        {
+          text: "Отметь пророка, рождение которого произошло без участия отца.",
+          options: ["Юсуф (мир ему)", "Иса (мир ему)", "Мухаммад (мир ему и благословение Аллаха)", "Ибрагим (мир ему)"],
+          correct: 1
+        },
+        {
+          text: "Какой пророк построил ковчег, чтобы спасти верующих от потопа?",
+          options: ["Муса (мир ему)", "Иса (мир ему)", "Юсуф (мир ему)", "Нух (мир ему)"],
+          correct: 3
+        },
+        {
+          text: "Один из пророков был продан в рабство из-за своей необычной красоты — кто это?",
+          options: ["Иса (мир ему)", "Муса (мир ему)", "Юсуф (мир ему)", "Сулейман (мир ему)"],
+          correct: 2
+        },
+        {
+          text: "Назови пророка, которого бросили в огонь, но он остался невредим по воле Аллаха.",
+          options: ["Муса (мир ему)", "Иса (мир ему)", "Ибрагим (мир ему)", "Давуд (мир ему)"],
+          correct: 2
+        },
+        {
+          text: "Кому было ниспослано первое откровение в пещере Хира?",
+          options: ["Иса (мир ему)", "Муса (мир ему)", "Нух (мир ему)", "Мухаммад (мир ему и благословение Аллаха)"],
+          correct: 3
+        },
+        {
+          text: "Как называли пророка, которого Аллах назвал Своим другом?",
+          options: ["Юсуф (мир ему)", "Ибрагим (мир ему)", "Муса (мир ему)", "Иса (мир ему)"],
+          correct: 1
+        },
+        {
+          text: "Кому была ниспослана книга Забур?",
+          options: ["Муса (мир ему)", "Иса (мир ему)", "Юсуф (мир ему)", "Давуд (мир ему)"],
+          correct: 3
+        },
+        {
+          text: "Один из пророков понимал язык птиц и животных — кто это?",
+          options: ["Муса (мир ему)", "Сулейман (мир ему)", "Иса (мир ему)", "Юсуф (мир ему)"],
+          correct: 1
+        },
+        {
+          text: "Назовите имя Пророка, который является отцом Исмаила и Исхака (мир им).",
+          options: ["Нух (мир ему)", "Ибрагим (мир ему)", "Муса (мир ему)", "Юсуф (мир ему)"],
+          correct: 1
+        },
+        {
+          text: "Какой Пророк известен своим исключительным терпением в тяжелой болезни и страданиях?",
+          options: ["Юнус (мир ему)", "Муса (мир ему)", "Иса (мир ему)", "Айюб (мир ему)"],
+          correct: 3
+        },
+        {
+          text: "Назови пророка, который был одновременно царём и пророком.",
+          options: ["Муса (мир ему)", "Иса (мир ему)", "Сулейман (мир ему)", "Юсуф (мир ему)"],
+          correct: 2
+        },
+        {
+          text: "Какому Пророку Всевышний Аллах ниспослал священную книгу Тора (Таурат)?",
+          options: ["Иса (мир ему)", "Ибрагим (мир ему)", "Муса (мир ему)", "Юсуф (мир ему)"],
+          correct: 2
+        },
+        {
+          text: "Кто был вознесён живым на небеса, согласно Корану?",
+          options: ["Юнус (мир ему)", "Иса (мир ему)", "Муса (мир ему)", "Ибрагим (мир ему)"],
+          correct: 1
+        },
+        {
+          text: "Кто говорил с Аллахом напрямую, получая откровения?",
+          options: ["Ибрагим (мир ему)", "Иса (мир ему)", "Юсуф (мир ему)", "Муса (мир ему)"],
+          correct: 3
+        },
+        {
+          text: "Назовите имя Пророка, который вместе со своим сыном построил Каабу в Мекке.",
+          options: ["Муса (мир ему)", "Нух (мир ему)", "Юсуф (мир ему)", "Ибрагим (мир ему)"],
+          correct: 3
+        },
+        {
+          text: "Какой Пророк в Коране назван «Духом от Аллаха» (Рух уль-Ллах)?",
+          options: ["Муса (мир ему)", "Ибрагим (мир ему)", "Иса (мир ему)", "Юсуф (мир ему)"],
+          correct: 2
+        },
+        {
+          text: "Какой титул или прозвище было дано Пророку Мухаммаду (мир ему и благословение Аллаха) за его честность и надёжность?",
+          options: ["Ас-Садик", "Абу-ль-Касим", "Аль-Амин", "Халиль-Улла"],
+          correct: 2
+        },
+        {
+          text: "Кто был известен как 'сабир' — терпеливый?",
+          options: ["Юнус (мир ему)", "Иса (мир ему)", "Муса (мир ему)", "Айюб (мир ему)"],
+          correct: 3
+        },
+        {
+          text: "Назови пророка, которого отличали мягкость и кротость.",
+          options: ["Муса (мир ему)", "Иса (мир ему)", "Юсуф (мир ему)", "Ибрагим (мир ему)"],
+          correct: 1
+        },
+        {
+          text: "Кто был мудрым судьёй и решал споры справедливо?",
+          options: ["Сулейман (мир ему)", "Муса (мир ему)", "Иса (мир ему)", "Юсуф (мир ему)"],
+          correct: 0
+        },
+        {
+          text: "Кого Всевышний выбрал для разрушения идолов и призыва к Единобожию?",
+          options: ["Ибрахим", "Нух", "Муса", "Иса"],
+          correct: 0
+        },
+        {
+          text: "Кто из Пророков назван в Коране истинным «муслимом» (предавшимся Богу) и покорившимся воле Аллаха?",
+          options: ["Муса (мир ему)", "Иса (мир ему)", "Юсуф (мир ему)", "Ибрагим (мир ему)"],
+          correct: 3
+        },
+        {
+          text: "Назови пророка, совершившего переселение из Мекки в Медину.",
+          options: ["Иса (мир ему)", "Муса (мир ему)", "Юсуф (мир ему)", "Мухаммад (мир ему и благословение Аллаха)"],
+          correct: 3
+        }
+      ];
+
+
+
+      let current = 0;
+      let score = 0;
+
+      const questionEl = document.getElementById("question");
+      const answersEl = document.getElementById("answers");
+      const feedbackEl = document.getElementById("feedback");
+      const resultEl = document.getElementById("result");
+      const progressEl = document.getElementById("progress");
+
+      function loadQuestion() {
+        const q = questions[current];
+        progressEl.textContent = `${current + 1}/${questions.length}`;
+        questionEl.textContent = q.text;
+        answersEl.innerHTML = "";
+        feedbackEl.textContent = "";
+
+        q.options.forEach((opt, i) => {
+          const btn = document.createElement("a");
+          btn.href = "#";
+          btn.className = "btn";
+          btn.textContent = opt;
+          btn.dataset.index = i;
+          btn.addEventListener("click", handleAnswer);
+          answersEl.appendChild(btn);
+        });
+      }
+
+      function handleAnswer(e) {
+        e.preventDefault();
+        const selected = parseInt(e.target.dataset.index);
+        const correct = questions[current].correct;
+        const buttons = document.querySelectorAll(".answers .btn");
+
+        buttons.forEach((btn, i) => {
+          btn.classList.add("disabled");
+          if (i === correct) {
+            btn.classList.add("correct");
+          } else {
+            btn.classList.add("wrong");
+          }
+        });
+
+        if (selected === correct) {
+          feedbackEl.textContent = "Правильно!";
+          feedbackEl.style.color = "green";
+          score++;
+        } else {
+          feedbackEl.textContent = `Неправильно. Правильный ответ: ${questions[current].options[correct]}`;
+          feedbackEl.style.color = "red";
+        }
+
+        setTimeout(() => {
+          current++;
+          if (current < questions.length) {
+            loadQuestion();
+          } else {
+            showResult();
+          }
+        }, 2000);
+      }
+
+      function showResult() {
+        document.querySelector(".question-box").style.display = "none";
+        resultEl.style.display = "block";
+        resultEl.innerHTML = `
+    🎉 Викторина завершена!<br>
+    Ваш результат: <strong>${score} из ${questions.length}</strong><br><br>
+    <a href="../Quiz/quiz.html" class="btn" style="
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #4CAF50;
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+    ">🔙 Вернуться в меню</a>
+  `;
+      }
+      loadQuestion();
+    </script>
+</body>
+
+</html>
